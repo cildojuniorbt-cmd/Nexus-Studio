@@ -54,7 +54,7 @@
 const homeSelectors=['.welcome','main > .section','.quick','.columns'];
 let captureStream=null,mediaRecorder=null,recordedChunks=[],audioContext=null,analyser=null,sourceNode=null,gainNode=null,rafId=null,recordStart=0,elapsedBeforePause=0,clockTimer=null,captureMode='audio',monitoring=false,recordingUrl=null,recordingCount=0;
 const captureView=document.getElementById('captureView');
-function showPage(page){const isCapture=page==='Capture';homeSelectors.forEach(sel=>document.querySelectorAll(sel).forEach(el=>el.style.display=isCapture?'none':''));captureView.classList.toggle('active',isCapture);document.getElementById('crumb').textContent=isCapture?'Capture Studio':page;document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===(isCapture?'Capture':page)));if(!isCapture&&page!=='Studio Home')toast(page+' será desenvolvido nas próximas etapas.');}
+function showPage(page){const isCapture=page==='Capture';homeSelectors.forEach(sel=>document.querySelectorAll(sel).forEach(el=>{el.style.setProperty('display',isCapture?'none':'','important')}));captureView.classList.toggle('active',isCapture);captureView.style.setProperty('display',isCapture?'block':'none','important');document.getElementById('crumb').textContent=isCapture?'Capture Studio':page;document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===(isCapture?'Capture':page)));if(!isCapture&&page!=='Studio Home')toast(page+' será desenvolvido nas próximas etapas.');}
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.go)));
 document.querySelectorAll('[data-capture-mode]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-capture-mode]').forEach(x=>x.classList.toggle('selected',x===b));captureMode=b.dataset.captureMode;document.getElementById('cameraPreview').classList.toggle('show',captureMode==='video');document.getElementById('captureHint').textContent=captureMode==='video'?'A gravação audiovisual usa a câmera e o microfone selecionados.':'Permita o acesso ao microfone para iniciar. Use fones para evitar retorno de áudio.';}));
 const canvas=document.getElementById('waveCanvas'),ctx=canvas.getContext('2d');
@@ -84,5 +84,13 @@ document.querySelectorAll('.mobile [data-page]').forEach(button=>{
     window.scrollTo({top:0,behavior:'smooth'});
   },{capture:true});
 });
+
+/* Reliable tap navigation for mobile Safari */
+document.addEventListener('click',function(event){
+ const button=event.target.closest('#mobileNav button[data-page], .mobile button[data-page], [data-go="Capture"], [data-page="Capture"]');
+ if(!button)return;
+ event.preventDefault();event.stopPropagation();
+ showPage('Capture');
+},true);
 </script>
 </body></html>
